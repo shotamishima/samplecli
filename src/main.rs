@@ -92,3 +92,27 @@ fn run<R: BufRead>(reader: R, verbose: bool) {
         println!("{}", answer);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    // testモジュールの親スコープで定義されている構造体など使えるようにする
+    use super::*;
+
+    #[test]
+    fn test_ok() {
+        let calc = RpnCalculator::new(false);
+        assert_eq!(calc.eval("5"), 5);
+        assert_eq!(calc.eval("50"), 50);
+        assert_eq!(calc.eval("-50"), -50);
+
+        assert_eq!(calc.eval("2 3 +"), 5);
+        assert_eq!(calc.eval("2 3 *"), 6);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_ng() {
+        let calc = RpnCalculator::new(false);
+        calc.eval("1 1 ^");
+    }
+}
