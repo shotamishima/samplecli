@@ -1,3 +1,5 @@
+use anyhow::{bail, ensure, Context, Result};
+
 use clap::Parser;
 use std::fs::File;
 use std::io::{stdin, BufRead, BufReader};
@@ -83,14 +85,17 @@ fn main() {
     }
 }
 
-fn run<R: BufRead>(reader: R, verbose: bool) {
+fn run<R: BufRead>(reader: R, verbose: bool) -> Result<()> {
     let calc = RpnCalculator::new(verbose);
     
     for line in reader.lines() {
-        let line = line.unwrap();
-        let answer = calc.eval(&line);
-        println!("{}", answer);
+        let line = line?;
+        match calc.eval(&line) {
+            Ok(answer) => println!("{}", answer),
+            Err(e) => println!("{:?}", e),
+        }
     }
+    Ok(()) // nullを返す？
 }
 
 #[cfg(test)]
